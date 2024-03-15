@@ -17,7 +17,14 @@ public class Lexer {
 
 // lexer
     // int *a =(b+c);
-
+/*
+ int a ;
+ String g;
+ a=3;
+ int b;
+ b+++a;
+ 
+ */
     public void tokenize() {
         StringBuilder buffer = new StringBuilder();
         String op;
