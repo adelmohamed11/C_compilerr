@@ -13,7 +13,6 @@ public class main {
         while (!(line = scanner.nextLine()).equals("exe")) {
             input.append(line).append("\n"); // Append newline character for each line
         }
-
         // Remove the last newline character
         input.deleteCharAt(input.length() - 1);
 

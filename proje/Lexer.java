@@ -22,8 +22,7 @@ public class Lexer {
  String g;
  a=3;
  int b;
- b+++a;
- 
+ b++-a
  */
     public void tokenize() {
         StringBuilder buffer = new StringBuilder();
