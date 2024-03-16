@@ -1,9 +1,11 @@
 package proje;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Lexer {
-    private final String input;
+    private String input;
     private int currentPosition;
     private static final String[] KEYWORDS = {"auto", "break", "case", "char", "const", "continue", "default", "do", "double", "else", "enum", "extern", "float", "for", "goto", "if", "int", "long", "register", "return", "short", "signed", "sizeof", "static", "struct", "switch", "typedef", "union", "unsigned", "void", "volatile","while"};
 
@@ -13,53 +15,66 @@ public class Lexer {
         this.input=input;
         this.currentPosition = 0;
         tokens = new ArrayList<>();
+
     }
 
-// lexer
-    // int *a =(b+c);
-/*
- int a ;
- String g;
- a=3;
- int b;
- b++-a
- */
+
     public void tokenize() {
         StringBuilder buffer = new StringBuilder();
         String op;
+        input = removeComments();
         while (currentPosition < input.length()) {
-            if( Character.toString(input.charAt(currentPosition)).matches("[+\\-*/%&|<>!=^~?:(),.;\\[\\]{}\\\\#\\s]") ){
-                String sbuffer = buffer.toString();
-                if ( sbuffer != "" ) {
-                    if (is_keyword(sbuffer)) {
-                        tokens.add(new Token(TokenType.KEYWORD, sbuffer));
-                    } else if (sbuffer.matches("[a-zA-Z_$][a-zA-Z0-9_$]*")) {
-                        tokens.add(new Token(TokenType.IDENTIFIER, sbuffer));
-                    } else if (sbuffer.matches("\\\".*?\\\"") || sbuffer.matches("'(\\\\.|[^'\\\\])*'|0[xX][0-9a-fA-F]+|0[0-7]*|0[bB][01]+|[1-9][0-9]*|0") || sbuffer.matches("[-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?")) {
-                        tokens.add(new Token(TokenType.LITERAL, sbuffer));
-                    }
+            char currentChar = input.charAt(currentPosition);
+            if(Character.toString(currentChar).matches("[+\\-*/%&|<>!=^~?:(),;\\[\\]{}#\\s]") ) {
+                if(buffer.length() > 0) {
+                    addToken(buffer);
                 }
-                op = Character.toString(input.charAt(currentPosition));
-                if ( op.matches ("[-+*/%&|<>^!~=]")){
+                op = Character.toString(currentChar);
+                if(op.matches("[-+*/%&|<>^!~=]")) {
                     currentPosition++;
-                    if ( Character.toString(input.charAt(currentPosition)).matches ("[-+*/%&|<>^!~=]")) {
-                            op += Character.toString(input.charAt(currentPosition));
-                    }else{
+                    if(currentPosition < input.length() && Character.toString(input.charAt(currentPosition)).matches("[-+*/%&|<>^!~=]")) {
+                        op += Character.toString(input.charAt(currentPosition));
+                    } else {
                         currentPosition--;
                     }
                     tokens.add(new Token(TokenType.OPERATOR,op));
-                }else if ( !op.equals("\s") ){
+                }else if ( !op.equals("\s") && !op.equals("\n") ){
                     tokens.add(new Token(TokenType.SYMBOL,op));
                 }
-
                 op = "";
                 buffer.delete(0, buffer.length());
             }else{
-                buffer.append(input.charAt(currentPosition));
+                StringBuilder b = new StringBuilder();
+                if ( input.charAt(currentPosition) == '"' ){
+                    currentPosition++;
+                    while ( input.charAt(currentPosition) != '"' ){
+                        b.append(input.charAt(currentPosition));
+                        currentPosition++;
+                    }
+                    tokens.add(new Token(TokenType.LITERAL,b.toString()));
+                }else {
+                    buffer.append(input.charAt(currentPosition));
+                }
             }
             currentPosition++;
         }
+        if(buffer.length() > 0) {
+            addToken(buffer);
+        }
     }
+
+    public void addToken(StringBuilder buffer) {
+        String sbuffer = buffer.toString();
+        if(is_keyword(sbuffer)) {
+            tokens.add(new Token(TokenType.KEYWORD, sbuffer));
+        } else if(sbuffer.matches("[a-zA-Z_$][a-zA-Z0-9_$]*")) {
+            tokens.add(new Token(TokenType.IDENTIFIER, sbuffer));
+        } else if(sbuffer.matches("\\\".*?\\\"") || sbuffer.matches("'(\\\\.|[^'\\\\])*'|0[xX][0-9a-fA-F]+|0[0-7]*|0[bB][01]+|[1-9][0-9]*|0") || sbuffer.matches("[-+]?[0-9]*[.]?[0-9]+([eE][-+]?[0-9]+)?")) {
+            tokens.add(new Token(TokenType.LITERAL, sbuffer));
+        }
+        buffer.delete(0, buffer.length());
+    }
+
 
     public boolean is_keyword(String str){
         for(String s: KEYWORDS ){
@@ -69,35 +84,12 @@ public class Lexer {
         }
         return false;
      }
-/*
-    private Token operatorToken() {
-        char currentChar = input.charAt(currentPosition);
-        currentPosition++; // Always advance currentPosition
-        TokenType tokenType = TokenType.fromChar(currentChar);
-        if (tokenType == TokenType.ADDITION || tokenType == TokenType.SUBTRACT) {
-            char nextChar = currentPosition < input.length() ? input.charAt(currentPosition) : '\0';
-            if (nextChar == currentChar) {
-                currentPosition++; // Consume the second character of the operator
-                if (currentChar == '+') {
-                    return new Token(TokenType.INCREMENT, "++");
-                } else {
-                    return new Token(TokenType.DECREMENT, "--");
-                }
-            }
-        } else if (tokenType == TokenType.LESSTHAN || tokenType == TokenType.GREATERTHAN) {
-            char nextChar = currentPosition < input.length() ? input.charAt(currentPosition) : '\0';
-            if (nextChar == '=') {
-                currentPosition++; // Consume the '=' character
-                if (tokenType == TokenType.LESSTHAN) {
-                    return new Token(TokenType.LESSTHAN_EQUAL, "<=");
-                } else {
-                    return new Token(TokenType.GREATERTHAN_EQUAL, ">=");
-                }
-            }
-        }
-        return new Token(tokenType, String.valueOf(currentChar));
+    
+
+    public String removeComments() {
+        String pattern = "(//[^\\n]*)|(/\\*[^/]*\\*/)";
+        return input.replaceAll(pattern,"");
     }
-*/
 
 
 }
