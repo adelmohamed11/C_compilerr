@@ -90,6 +90,6 @@ public class Lexer {
         String pattern = "(//[^\\n]*)|(/\\*[^/]*\\*/)";
         return input.replaceAll(pattern,"");
     }
-
+     
 
 }
