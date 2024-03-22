@@ -1,6 +1,8 @@
 
 
 package proje;
+
+
 public class Token{
     private TokenType type;
 
