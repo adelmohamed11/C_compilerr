@@ -1,4 +1,3 @@
-
 package proje;
 public enum TokenType {
         KEYWORD,
@@ -24,5 +23,4 @@ public enum TokenType {
         BIT_AND, BIT_OR, BIT_XOR, BIT_NOT, LEFT_SHIFT, RIGHT_SHIFT, UnknownOP
 
 }
-
 
