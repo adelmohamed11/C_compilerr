@@ -2,8 +2,8 @@ package proje;
 
 import java.util.Scanner;
 
-public class main {
-    public static void main(String[] args) {
+public class Main {
+    public static void main (String[] args) {
         Scanner scanner = new Scanner(System.in);
 
         System.out.println("Enter your multiline input (type 'exe' on a separate line to finish):");
