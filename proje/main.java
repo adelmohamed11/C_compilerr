@@ -16,7 +16,7 @@ public class main {
         // Remove the last newline character
         input.deleteCharAt(input.length() - 1);
 
-        Lexer lexer = new Lexer(input.toString());
+        Lexer lexer = new Lexer(input.toString(), null);
         lexer.tokenize();
         for (Token token : lexer.tokens) {
             System.out.println(token);

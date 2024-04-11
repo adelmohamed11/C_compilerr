@@ -1,4 +1,5 @@
 package proje;
+
 public enum TokenType {
         KEYWORD,
         IDENTIFIER,
